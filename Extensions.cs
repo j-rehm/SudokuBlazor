@@ -33,4 +33,10 @@ public static class Extensions
   public static void AddItem<TKey, TValue>(this Dictionary<TKey, List<TValue>> dict, TKey key, TValue value)
     where TKey : notnull
     => dict.AddItems(key, value);
+
+  public static int Mod(int a, int n)
+  {
+    int r = a % n;
+    return r < 0 ? r + n : r;
+  }
 }

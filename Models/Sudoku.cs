@@ -105,27 +105,27 @@ public class Sudoku : IDisposable
     return AreCoordsValid(coords);
   }
 
-  public Cell? CellAt(int index)
+  public Cell? GetCellAt(int index)
   {
     if (!IsIndexValid(index))
       return null;
     return _cells[index];
   }
-  public Cell? CellAt(int2 coords)
+  public Cell? GetCellAt(int2 coords)
   {
-    if (!GetIndex(coords, out int index))
+    if (!AreCoordsValid(coords) || !GetIndex(coords, out int index))
       return null;
     return _cells[index];
   }
 
   public bool TryGetCell(int index, [NotNullWhen(true)] out Cell? cell)
   {
-    cell = CellAt(index);
+    cell = GetCellAt(index);
     return cell is not null;
   }
   public bool TryGetCell(int2 coords, [NotNullWhen(true)] out Cell? cell)
   {
-    cell = CellAt(coords);
+    cell = GetCellAt(coords);
     return cell is not null;
   }
 

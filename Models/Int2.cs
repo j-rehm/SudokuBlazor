@@ -22,6 +22,7 @@ public readonly struct int2(int x, int y)
   public static int2 operator -(int2 left, int2 right) => (left.X - right.X, left.Y - right.Y);
   public static int2 operator *(int2 left, int2 right) => (left.X * right.X, left.Y * right.Y);
   public static int2 operator /(int2 left, int2 right) => (left.X / right.X, left.Y / right.Y);
+  public static int2 operator %(int2 left, int2 right) => (left.X % right.X, left.Y % right.Y);
 
   public override int GetHashCode() => HashCode.Combine(X, Y);
 

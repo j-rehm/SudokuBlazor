@@ -1,8 +1,6 @@
-﻿<div class="@Class" tabindex="0" @attributes="AdditionalAttributes">
+﻿@inject Session Session
 
-  <div class="underlay">
-    <span>@(Cell?.Coords.Row),@(Cell?.Coords.Col)</span>
-  </div>
+<div class="@Class" tabindex="0" @attributes="AdditionalAttributes">
 
   @if (Cell is null)
   {
@@ -34,6 +32,12 @@
           }
         </div>
       }
+    </div>
+  }
+  else if (Session.Settings.DebugShowCellCoords)
+  {
+    <div class="@ContentClass.Add("debug cell-coords")">
+      <span>@(Cell?.Coords.Row),@(Cell?.Coords.Col)</span>
     </div>
   }
 </div>

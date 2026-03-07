@@ -1,29 +1,59 @@
-﻿@page "/sudoku"
+﻿@inject Session Session
+
+@page "/"
 
 <content class="centered">
   <div class="control-bar">
-    <button @onclick="Sudoku.CalculateCellOptions">Calc Options</button>
-    <button @onclick="Sudoku.ResetCellOptions">Clear Options</button>
-    <button @onclick="Sudoku.CalculateCellProblems">Find Problems</button>
-    <button @onclick="Sudoku.ResetCellProblems">Clear Problems</button>
     <button @onclick="CalculateState">Refresh</button>
+    <button @onclick="CleanState">Clean</button>
     <button @onclick="() => Sudoku.SetRandomValues()">Random</button>
     <button @onclick="Sudoku.Clear">Clear</button>
+
+    @if (Session.Settings.WrapMovement)
+    {
+      <button @onclick="() => Session.Settings.WrapMovement = false">Disable Wrap</button>
+    }
+    else
+    {
+      <button @onclick="() => Session.Settings.WrapMovement = true">Enable Wrap</button>
+    }
+
+    @if (Session.Settings.DebugShowCellCoords)
+    {
+      <button @onclick="() => Session.Settings.DebugShowCellCoords = false">Disable Debug Coords</button>
+    }
+    else
+    {
+      <button @onclick="() => Session.Settings.DebugShowCellCoords = true">Enable Debug Coords</button>
+    }
   </div>
 
   <div class="row">
     <CascadingValue Value="@Sudoku">
       <CascadingValue Value="@SelectedCell">
         <div class="grid sudoku">
-          @for (int row = 0; row < Sudoku.Width; row++)
+          @for (int blockRow = 0; blockRow < Sudoku.Width; blockRow += Sudoku.BlockWidth)
           {
             <div class="row">
-              @for (int col = 0; col < Sudoku.Width; col++)
+              @for (int blockCol = 0; blockCol < Sudoku.Width; blockCol += Sudoku.BlockWidth)
               {
-                Sudoku.TryGetCell((row, col), out Cell? cell);
-                <CellView Cell="cell"
-                          @onclick="@(() => CellClicked(cell))"
-                          @onkeydown="@OnKeyDown" />
+                int2 blockCoords = (blockRow, blockCol);
+                int blockIndex = Sudoku.IndexOf(blockCoords);
+              
+                <div class="grid block">
+                  @for (int row = 0; row < Sudoku.BlockWidth; row++)
+                  {
+                    <div class="row">
+                      @for (int col = 0; col < Sudoku.BlockWidth; col++)
+                      {
+                        Sudoku.TryGetCell((row, col) + blockCoords, out Cell? cell);
+                        <CellView Cell="cell"
+                                  @onclick="() => CellClicked(cell)"
+                                  @onkeydown="OnKeyDown" />
+                      }
+                    </div>
+                  }
+                </div>
               }
             </div>
           }
