@@ -52,11 +52,13 @@
 
   private bool IsSelected => Cell == SelectedCell;
   private bool IsPeer => SelectedCell is not null && Cell?.SharesGroupWith(SelectedCell) == true;
+  private bool IsKin => Cell?.HasValue == true && SelectedCell?.HasValue == true && Cell.Value == SelectedCell.Value;
 
   private Class Class => Class
     .Is("cell no-select")
     .AddIf(IsSelected, "selected")
-    .AddIf(IsPeer, "peer");
+    .AddIf(IsPeer, "peer")
+    .AddIf(IsKin, "kin");
 
   private Class ContentClass => Class
     .Is("cell-content");

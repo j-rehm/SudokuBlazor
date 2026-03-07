@@ -140,10 +140,12 @@ content.centered {
 }
 .grid.block > .row > .cell.selected > .cell-content {
   color: var(--gold);
-  font-weight: 700;
 }
 .grid.block > .row > .cell.peer {
   background-color: var(--dark-gold);
+}
+.grid.block > .row > .cell.kin > .cell-content {
+  font-weight: 700;
 }
 
 .grid.block > .row > .cell > .cell-content.problem.no-cell {
