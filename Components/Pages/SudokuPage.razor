@@ -1,94 +1,47 @@
 ﻿@page "/sudoku"
 
 <content class="centered">
-  <div class="col">
-    <div class="control-bar">
-      <button @onclick="@New">New</button>
-      <button @onclick="@(() => Sudoku.UpdatePossibleValues())">Update Possible Values</button>
-      <button @onclick="@(() => Sudoku.UpdateProblems())">Find Problems</button>
-      <button @onclick="@(() => Sudoku.Update())">Update</button>
-      <button @onclick="@(() => Sudoku.Random())">Random</button>
-      <button @onclick="@(() => Sudoku.Clear())">Clear</button>
-    </div>
+  <div class="control-bar">
+    <button @onclick="Sudoku.CalculateCellOptions">Calc Options</button>
+    <button @onclick="Sudoku.ResetCellOptions">Clear Options</button>
+    <button @onclick="Sudoku.CalculateCellProblems">Find Problems</button>
+    <button @onclick="Sudoku.ResetCellProblems">Clear Problems</button>
+    <button @onclick="CalculateState">Refresh</button>
+    <button @onclick="() => Sudoku.SetRandomValues()">Random</button>
+    <button @onclick="Sudoku.Clear">Clear</button>
+  </div>
 
-    <div class="row">
-      <grid class="sudoku">
-        @for (int row = 0; row < Sudoku.Magnitude; row++)
-        {
-          <row>
-            @for (int col = 0; col < Sudoku.Magnitude; col++)
-            {
-              int2 coords = (row, col);
-              Sudoku.GetIndex(coords, out int index);
-              Sudoku.GetCell(coords, out Cell? cell);
-              bool selected = cell == SelectedCell;
-              bool peer = SelectedCell is not null && cell?.SharesGroupWith(SelectedCell) == true;
+  <div class="row">
+    <CascadingValue Value="@Sudoku">
+      <CascadingValue Value="@SelectedCell">
+        <div class="grid sudoku">
+          @for (int row = 0; row < Sudoku.Width; row++)
+          {
+            <div class="row">
+              @for (int col = 0; col < Sudoku.Width; col++)
+              {
+                Sudoku.TryGetCell((row, col), out Cell? cell);
+                <CellView Cell="cell"
+                          @onclick="@(() => CellClicked(cell))"
+                          @onkeydown="@OnKeyDown" />
+              }
+            </div>
+          }
+        </div>
+      </CascadingValue>
+    </CascadingValue>
 
-              <div class="@Class.Is("cell").AddIf(selected, "selected").AddIf(peer, "peer")"
-                   tabindex="0"
-                   @onclick="@(() => CellClicked(cell))"
-                   @onkeydown="@OnKeyDown" @onkeyup="@OnKeyUp" @onkeypress="@OnKeyPress">
-                
-                @* <div class="underlay">
-                  <span>R@(row)</span>
-                  <span>C@(col)</span>
-                  <span>r@(cell?.Coords.Row)</span>
-                  <span>c@(cell?.Coords.Col)</span>
-                </div> *@
-
-                @if (cell is null)
-                {
-                  <span class="cell-content problem no-cell" />
-                }
-                else if (cell.HasValue)
-                {
-                  bool duplicate = cell.HasProblem<CellDuplicateGroup>(out _);
-                  <span class="@Class.Is("cell-content cell-value no-select").AddIf(duplicate, "problem duplicate")">
-                    @cell?.Value
-                  </span>
-                }
-                else
-                {
-                  bool singlePossibility = cell.PossibleValues.Count == 1;
-                  bool noPossibilities = cell.HasProblem<CellNoPossibilities>(out _);
-                  <grid class="@Class.Is("cell-possible-values").AddIf(singlePossibility, "single-possibility").AddIf(noPossibilities, "problem no-possibilities")">
-                    @for (int i = 0; i < Sudoku.Root; i++)
-                    {
-                      <row>
-                        @for (int j = 0; j < Sudoku.Root; j++)
-                        {
-                          int value = (i * Sudoku.Root + j) + 1;
-                          <div class="cell">
-                            @if (cell.PossibleValues.Contains(value))
-                            {
-                              <span class="cell-content">
-                                @value
-                              </span>
-                            }
-                          </div>
-                        }
-                      </row>
-                    }
-                  </grid>
-                }
-              </div>
-            }
-          </row>
-        }
-      </grid>
-
-      <div class="number-buttons">
-        @for (int i = 0; i < Sudoku.Magnitude; i++)
-        {
-          int value = i + 1;
-          <button class="number-btn" @onclick="@(() => ValueClicked(value))">
-            @value
-          </button>
-        }
-        <button class="number-btn" @onclick="@(() => ValueClicked(null))">
-          ✕
+    <div class="number-buttons">
+      @for (int i = 0; i < Sudoku.Width; i++)
+      {
+        int value = i + 1;
+        <button class="number-btn" @onclick="@(() => ValueClicked(value))">
+          @value
         </button>
-      </div>
+      }
+      <button class="number-btn" @onclick="@(() => ValueClicked(null))">
+        ✕
+      </button>
     </div>
   </div>
 </content>

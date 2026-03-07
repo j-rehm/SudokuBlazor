@@ -6,10 +6,16 @@ public class Cell(int2 coords)
 {
   public int2 Coords { get; } = coords;
 
-  public int? Value { get; set; }
-  public bool HasValue => Value.HasValue;
+  private int? _value = null;
+  public int Value
+  {
+    get => _value!.Value;
+    set => _value = value;
+  }
+  public bool HasValue => _value.HasValue;
+  public void RemoveValue() => _value = null;
 
-  private List<CellGroup> Groups { get; set; } = [];
+  public List<CellGroup> Groups { get; } = [];
   public void JoinGroup(CellGroup group)
     => Groups.Add(group);
   public void LeaveGroup(CellGroup group)
@@ -19,9 +25,13 @@ public class Cell(int2 coords)
   public bool SharesGroupWith(Cell cell)
     => Groups.Any(cell.IsInGroup);
 
-  public HashSet<int> PossibleValues { get; set; } = [];
+  public HashSet<int> Options { get; } = [];
+  public bool HasNoOptions => HasValue == false && Options.Count == 0;
+  public bool HasOptions => HasValue == false && Options.Count > 0;
+  public bool HasSingleOption => HasValue == false && Options.Count == 1;
+  public bool CouldBe(int value) => Options.Contains(value);
 
-  public HashSet<CellInvalidContext> Problems { get; set; } = [];
+  public HashSet<CellInvalidContext> Problems { get; } = [];
   public bool HasProblem<T>(out List<T> problems)
     where T : CellInvalidContext
   {
@@ -31,12 +41,13 @@ public class Cell(int2 coords)
         problems.Add(tProblem);
     return problems.Count > 0;
   }
+  public bool IsDuplicate => HasProblem<CellDuplicateGroup>(out _);
 }
 
 public class CellGroup : IEnumerable<Cell>, IDisposable
 {
-  private List<Cell> Cells { get; set; } = [];
-  public HashSet<CellInvalidContext> Problems { get; private set; } = [];
+  private List<Cell> Cells { get; } = [];
+  public HashSet<CellInvalidContext> Problems { get; } = [];
 
   public void Add(Cell cell)
   {
@@ -48,7 +59,7 @@ public class CellGroup : IEnumerable<Cell>, IDisposable
   {
     foreach (Cell cell in Cells)
       cell.LeaveGroup(this);
-    Cells = [];
+    Cells.Clear();
     GC.SuppressFinalize(this);
   }
 
@@ -56,29 +67,46 @@ public class CellGroup : IEnumerable<Cell>, IDisposable
   {
     HashSet<int> takenValues = [];
     foreach (Cell cell in Cells)
-      if (cell.Value is int value)
-        takenValues.Add(value);
+      if (cell.HasValue)
+        takenValues.Add(cell.Value);
     return takenValues;
   }
 
-  public void UpdatePossibleValues()
+  public void UpdateCellOptions()
   {
     HashSet<int> takenValues = GetTakenValues();
     foreach (Cell cell in Cells)
-      cell.PossibleValues.ExceptWith(takenValues);
+      if (cell.HasValue)
+        cell.Options.Clear();
+      else
+        cell.Options.ExceptWith(takenValues);
   }
 
-  public void UpdateProblems()
+  public void SetValueTaken(int value)
+    => SetValuesTaken(value);
+  public void SetValuesTaken(params IEnumerable<int> values)
+  {
+    foreach (Cell cell in Cells)
+      cell.Options.ExceptWith(values);
+  }
+
+  public void UpdateCellProblems()
   {
     Dictionary<int, List<Cell>> duplicates = [];
     for (int i = 0; i < Cells.Count; i++)
     {
       Cell cell = Cells[i];
+      if (!cell.HasValue)
+        continue;
+
       for (int j = i + 1; j < Cells.Count; j++)
       {
         Cell other = Cells[j];
-        if (cell.HasValue && cell.Value == other.Value)
-          duplicates.AddItems(cell.Value!.Value, cell, other);
+        if (!other.HasValue)
+          continue;
+
+        if (cell.Value == other.Value)
+          duplicates.AddItems(cell.Value, cell, other);
       }
     }
     
@@ -86,16 +114,9 @@ public class CellGroup : IEnumerable<Cell>, IDisposable
       if (problem is IDisposable disposable)
         disposable.Dispose();
 
-    Problems = [];
+    Problems.Clear();
     foreach (List<Cell> cells in duplicates.Values)
       Problems.Add(new CellDuplicateGroup(cells));
-  }
-
-  public bool AreCellsValid(out HashSet<CellInvalidContext> problems)
-  {
-    UpdateProblems();
-    problems = Problems;
-    return Problems.Count == 0;
   }
 
   public IEnumerator<Cell> GetEnumerator()
@@ -110,7 +131,7 @@ public class CellInvalidContext { }
 
 public class CellDuplicateGroup : CellInvalidContext, IEnumerable<Cell>, IDisposable
 {
-  private List<Cell> Cells { get; set; }
+  private List<Cell> Cells { get; }
 
   public CellDuplicateGroup(List<Cell> cells)
   {
@@ -123,7 +144,7 @@ public class CellDuplicateGroup : CellInvalidContext, IEnumerable<Cell>, IDispos
   {
     foreach (Cell cell in Cells)
       cell.Problems.Remove(this);
-    Cells = [];
+    Cells.Clear();
     GC.SuppressFinalize(this);
   }
 
@@ -135,11 +156,11 @@ public class CellDuplicateGroup : CellInvalidContext, IEnumerable<Cell>, IDispos
   IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-public class CellNoPossibilities : CellInvalidContext, IDisposable
+public class CellNoOptions : CellInvalidContext, IDisposable
 {
   public Cell? Cell { get; private set; }
 
-  public CellNoPossibilities(Cell cell)
+  public CellNoOptions(Cell cell)
   {
     Cell = cell;
     Cell.Problems.Add(this);

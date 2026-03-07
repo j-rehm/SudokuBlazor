@@ -28,7 +28,6 @@ table td {
   --green:     oklch(from green l c h);
 }
 
-
 html {
   background-color: #202020;
   color: white;
@@ -54,6 +53,127 @@ content.centered {
   flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
+}
+
+.row {
+  display: flex;
+  flex-flow: row nowrap;
+}
+.col {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.grid {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-flow: column nowrap;
+}
+.grid .row {
+  width: stretch;
+  display: flex;
+  flex-flow: row nowrap;
+}
+.grid .row .cell {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+.grid .row .cell .cell-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.grid.sudoku {
+  outline: 0.125rem solid white;
+  outline-offset: -0.0625rem;
+  padding: 0.25rem;
+}
+.grid.sudoku > .row,
+.grid.sudoku > .row > .cell {
+  flex-basis: 5rem;
+}
+.grid.sudoku > .row > .cell {
+  outline: 0.125rem solid white;
+  outline-offset: -0.0625rem;
+
+  cursor: pointer;
+  background-color: #303030;
+  z-index: 0;
+}
+.grid.sudoku > .row > .cell > .cell-content {
+  font-size: 3rem;
+  font-weight: 400;
+}
+
+.grid.sudoku > .row > .cell.selected {
+  outline: 0.25rem solid var(--gold);
+  outline-offset: -0.125rem;
+  z-index: 1;
+}
+.grid.sudoku > .row > .cell.selected > .cell-content {
+  color: var(--gold);
+  font-weight: 700;
+}
+.grid.sudoku > .row > .cell.peer {
+  background-color: var(--dark-gold);
+}
+
+.grid.sudoku > .row > .cell > .cell-content.problem.no-cell {
+  background-color: black;
+}
+.grid.sudoku > .row > .cell > .cell-content.problem.duplicate {
+  color: var(--red);
+  font-weight: 700;
+}
+.grid.sudoku > .row > .cell > .cell-content.problem.no-options {
+  background-color: var(--dark-red);
+}
+
+
+.grid.cell-options {
+  padding: 10%;
+}
+.grid.cell-options .cell {
+  width: stretch;
+}
+.grid.cell-options .cell-content {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #BBB;
+}
+
+.grid.cell-options.single-option .cell-content {
+  color: var(--green);
+}
+
+.number-buttons {
+  display: flex;
+  flex-flow: column;
+}
+
+.cell:has(.underlay) {
+  position: relative;
+}
+.cell .underlay {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  padding: 0.25rem;
+  box-sizing: border-box;
+  z-index: -1;
+}
+.cell .underlay > * {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #383838;
 }
 
 

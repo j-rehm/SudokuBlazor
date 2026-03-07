@@ -1,0 +1,59 @@
+﻿<div class="@Class" tabindex="0" @attributes="AdditionalAttributes">
+
+  <div class="underlay">
+    <span>@(Cell?.Coords.Row),@(Cell?.Coords.Col)</span>
+  </div>
+
+  @if (Cell is null)
+  {
+    <span class="@ContentClass.Add("problem no-cell")" />
+  }
+  else if (Cell.HasValue)
+  {
+    <span class="@ContentClass.Add("cell-value").AddIf(Cell.IsDuplicate, "problem duplicate")">
+      @Cell.Value
+    </span>
+  }
+  else if (Cell.HasOptions)
+  {
+    <div class="@Class.Is("grid cell-options").AddIf(Cell.HasSingleOption, "single-option").AddIf(Cell.HasNoOptions, "problem no-options")">
+      @for (int i = 0; i < Sudoku.BlockWidth; i++)
+      {
+        <div class="row">
+          @for (int j = 0; j < Sudoku.BlockWidth; j++)
+          {
+            int value = (i * Sudoku.BlockWidth + j) + 1;
+            <div class="cell">
+              @if (Cell.CouldBe(value))
+              {
+                <span class="cell-content">
+                  @value
+                </span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
+
+@code {
+  [Parameter(CaptureUnmatchedValues = true)]
+  public Dictionary<string, object> AdditionalAttributes { get; set; } = null!;
+
+  [Parameter, EditorRequired] public Cell? Cell { get; init; } = null;
+  [CascadingParameter] private Sudoku Sudoku { get; init; } = null!;
+  [CascadingParameter] private Cell? SelectedCell { get; init; } = null;
+
+  private bool IsSelected => Cell == SelectedCell;
+  private bool IsPeer => SelectedCell is not null && Cell?.SharesGroupWith(SelectedCell) == true;
+
+  private Class Class => Class
+    .Is("cell no-select")
+    .AddIf(IsSelected, "selected")
+    .AddIf(IsPeer, "peer");
+
+  private Class ContentClass => Class
+    .Is("cell-content");
+}
