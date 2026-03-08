@@ -1,4 +1,4 @@
-﻿namespace SudokuBlazor;
+﻿namespace SudokuBlazor.Models;
 
 public class Class
 {

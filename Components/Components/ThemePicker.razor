@@ -1,0 +1,46 @@
+﻿@inject Session Session
+@inject ThemeService ThemeService
+
+<div class="theme-picker combo">
+  <input id="theme-list-toggle"
+         type="checkbox"
+         class="combo-input" />
+
+  <label for="theme-list-toggle"
+         class="combo-label">
+    <span class="@Class.Is("combo-label-text")">
+      Theme: @Session.Settings.Theme.Name
+    </span>
+  </label>
+
+  <div class="combo-list scrollable" onclick="document.querySelector('#theme-list-toggle').click()">
+    @foreach (Theme theme in Theme.Themes)
+    {
+      <div class="@Class.Is("combo-list-item").AddIf(theme == Session.Settings.Theme, "selected")"
+           @onclick="() => SetTheme(theme)">
+        @theme.Name
+      </div>
+    }
+  </div>
+</div>
+
+@code {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      string? tag = await ThemeService.GetStoredOrSystemThemeAsync();
+      if (Theme.TryGetTheme(tag, out Theme theme))
+        Session.Settings.Theme = theme;
+    }
+  }
+
+  private async Task SetTheme(Theme theme)
+  {
+    if (theme == Session.Settings.Theme)
+      return;
+    await ThemeService.SetThemeAsync(theme.Tag);
+    Session.Settings.Theme = theme;
+    StateHasChanged();
+  }
+}

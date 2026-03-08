@@ -1,0 +1,39 @@
+﻿@inject ThemeService ThemeService
+@inject Session Session
+@implements IAsyncDisposable
+
+@code {
+  private DotNetObjectReference<SystemThemeListener>? _dotNetRef;
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      _dotNetRef = DotNetObjectReference.Create(this);
+      await ThemeService.RegisterSystemChangeCallbackAsync(_dotNetRef, nameof(OnSystemThemeChanged));
+    }
+  }
+
+  [JSInvokable]
+  public Task OnSystemThemeChanged(string tag)
+  {
+    if (Theme.TryGetTheme(tag, out Theme theme))
+      Session.Settings.Theme = theme;
+
+    return Task.CompletedTask;
+  }
+
+  public async ValueTask DisposeAsync()
+  {
+    if (_dotNetRef != null)
+    {
+      try
+      {
+        await ThemeService.UnregisterSystemChangeCallbackAsync(_dotNetRef);
+      }
+      catch { }
+      _dotNetRef.Dispose();
+      _dotNetRef = null;
+    }
+  }
+}

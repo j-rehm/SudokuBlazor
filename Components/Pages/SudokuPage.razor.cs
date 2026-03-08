@@ -62,7 +62,7 @@ public partial class SudokuPage
     direction = GetWrapDirection(direction);
     offset = GetOffset(direction);
     coords += offset;
-    coords = (Extensions.Mod(coords.Row, Sudoku.Width), Extensions.Mod(coords.Col, Sudoku.Width));
+    coords = (Extensions.Math.Mod(coords.Row, Sudoku.Width), Extensions.Math.Mod(coords.Col, Sudoku.Width));
     SelectedCell = Sudoku.GetCellAt(coords);
   }
 

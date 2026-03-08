@@ -1,0 +1,73 @@
+﻿.combo {
+  position: relative; /* anchor for absolute child */
+  display: inline-block; /* shrink to label width */
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+.combo-input {
+  display: none;
+}
+
+.combo-label {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+
+  /* remove the fixed height so padding can size the control */
+  min-height: 1rem;
+
+  /* keep clipping but prevent text from overflowing into padding */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  cursor: pointer;
+  background: var(--color-bg-subtle);
+  padding: var(--control-padding);
+  border-radius: var(--control-radius);
+  box-shadow: var(--control-shadow-highlight), var(--control-shadow);
+}
+
+.combo-list {
+  display: none;
+
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+
+  flex-flow: column nowrap;
+  gap: var(--control-gap);
+
+  padding: var(--control-padding-inline);
+  width: calc(100% - var(--control-padding-inline-start) - var(--control-padding-inline-end));
+
+  background: var(--color-bg-subtle);
+  border-bottom-left-radius: var(--control-radius);
+  border-bottom-right-radius: var(--control-radius);
+  box-shadow: var(--control-shadow-highlight), var(--control-shadow);
+}
+
+.combo-list-item {
+  padding-inline: var(--control-padding-inline);
+  cursor: pointer;
+}
+.combo-list-item.selected {
+  padding-block: var(--control-padding-block);
+  background: var(--color-bg-active);
+  border-radius: var(--control-radius-inner);
+}
+
+#theme-list-toggle:checked + .combo-label {
+  background: var(--color-bg-active);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#theme-list-toggle:checked + .combo-label + .combo-list {
+  display: flex;
+}
+
+.scrollable {
+  overflow-y: auto;
+}

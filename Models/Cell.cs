@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SudokuBlazor.Extensions;
+using System.Collections;
 
 namespace SudokuBlazor.Models;
 
