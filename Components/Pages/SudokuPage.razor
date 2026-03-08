@@ -27,6 +27,15 @@
       <button @onclick="() => Session.Settings.DebugShowCellCoords = true">Enable Debug Coords</button>
     }
 
+    @if (Session.Settings.InputMode == InputMode.Value)
+    {
+      <button @onclick="() => Session.Settings.InputMode = InputMode.Option">Mode: Set Cell Value</button>
+    }
+    else if (Session.Settings.InputMode == InputMode.Option)
+    {
+      <button @onclick="() => Session.Settings.InputMode = InputMode.Value">Mode: Toggle Cell Option</button>
+    }
+
     <ThemePicker />
   </div>
 

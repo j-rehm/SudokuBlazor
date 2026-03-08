@@ -70,10 +70,26 @@ public partial class SudokuPage
   {
     if (SelectedCell is null)
       return;
-    if (value is null)
-      SelectedCell.RemoveValue();
-    else
-      SelectedCell.Value = value.Value;
+    if (Session.Settings.InputMode == InputMode.Value)
+    {
+      if (value is null)
+        SelectedCell.RemoveValue();
+      else
+      {
+        SelectedCell.Value = value.Value;
+        foreach (CellGroup group in SelectedCell.Groups)
+          group.SetValueTaken(value.Value);
+      }
+    }
+    else if (Session.Settings.InputMode == InputMode.Option)
+    {
+      if (value is null)
+        return;
+      if (SelectedCell.Options.Contains(value.Value))
+        SelectedCell.Options.Remove(value.Value);
+      else
+        SelectedCell.Options.Add(value.Value);
+    }
   }
 
   private void CalculateState()

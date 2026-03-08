@@ -8,12 +8,13 @@ public readonly struct Theme(string name, string? tag) : IEquatable<Theme>
   public string? Tag { get; } = tag;
 
   public static readonly Theme System = new("System", "system");
-  public static readonly Theme Dark = new("Dark", "dark");
   public static readonly Theme Light = new("Light", "light");
+  public static readonly Theme Dark = new("Dark", "dark");
+  public static readonly Theme Amanda = new("Amanda", "amanda");
 
   public static readonly IReadOnlyList<Theme> Themes =
   [
-    System, Dark, Light
+    System, Light, Dark, Amanda
   ];
 
   public static Theme? ThemeOf(string? tag)

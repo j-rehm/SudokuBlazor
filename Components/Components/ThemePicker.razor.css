@@ -10,6 +10,7 @@
 }
 
 .combo-label {
+  position: relative;
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
@@ -42,8 +43,11 @@
 
   padding: var(--control-padding-inline);
   width: calc(100% - var(--control-padding-inline-start) - var(--control-padding-inline-end));
+  
+  background: oklch(from var(--color-bg-subtle) l c h / 50%);
+  backdrop-filter: blur(0.1875rem);
+  /*background: var(--color-bg-subtle);*/
 
-  background: var(--color-bg-subtle);
   border-bottom-left-radius: var(--control-radius);
   border-bottom-right-radius: var(--control-radius);
   box-shadow: var(--control-shadow-highlight), var(--control-shadow);
@@ -55,14 +59,20 @@
 }
 .combo-list-item.selected {
   padding-block: var(--control-padding-block);
-  background: var(--color-bg-active);
+
+  background: oklch(from var(--color-bg-active) l c h / 25%);
+  backdrop-filter: blur(0.0625rem);
+  /*background: var(--color-bg-active);*/
+  
   border-radius: var(--control-radius-inner);
+  box-shadow: var(--control-shadow-highlight), var(--control-shadow);
 }
 
 #theme-list-toggle:checked + .combo-label {
   background: var(--color-bg-active);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  z-index: 1001;
 }
 #theme-list-toggle:checked + .combo-label + .combo-list {
   display: flex;
