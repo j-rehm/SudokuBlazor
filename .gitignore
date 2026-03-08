@@ -121,7 +121,7 @@ DocProject/Help/Html2
 DocProject/Help/html
 
 # Click-Once directory
-publish/
+#publish/
 
 # Publish Web Output
 *.[Pp]ublish.xml
@@ -201,3 +201,5 @@ __pycache__/
 
 # Windows thumbnail cache files
 Thumbs.db
+
+appsettings.development.json

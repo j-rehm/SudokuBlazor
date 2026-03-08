@@ -1,0 +1,253 @@
+/* /Components/Components/ThemePicker.razor.rz.scp.css */
+.combo[b-scf27s7142] {
+  position: relative; /* anchor for absolute child */
+  display: inline-block; /* shrink to label width */
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+.combo-input[b-scf27s7142] {
+  display: none;
+}
+
+.combo-label[b-scf27s7142] {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+
+  /* remove the fixed height so padding can size the control */
+  min-height: 1rem;
+
+  /* keep clipping but prevent text from overflowing into padding */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  cursor: pointer;
+  background: var(--color-bg-subtle);
+  padding: var(--control-padding);
+  border-radius: var(--control-radius);
+  box-shadow: var(--control-shadow-highlight), var(--control-shadow);
+}
+
+.combo-list[b-scf27s7142] {
+  display: none;
+
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+
+  flex-flow: column nowrap;
+  gap: var(--control-gap);
+
+  padding: var(--control-padding-inline);
+  width: calc(100% - var(--control-padding-inline-start) - var(--control-padding-inline-end));
+
+  background: var(--color-bg-subtle);
+  border-bottom-left-radius: var(--control-radius);
+  border-bottom-right-radius: var(--control-radius);
+  box-shadow: var(--control-shadow-highlight), var(--control-shadow);
+}
+
+.combo-list-item[b-scf27s7142] {
+  padding-inline: var(--control-padding-inline);
+  cursor: pointer;
+}
+.combo-list-item.selected[b-scf27s7142] {
+  padding-block: var(--control-padding-block);
+  background: var(--color-bg-active);
+  border-radius: var(--control-radius-inner);
+}
+
+#theme-list-toggle:checked + .combo-label[b-scf27s7142] {
+  background: var(--color-bg-active);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#theme-list-toggle:checked + .combo-label + .combo-list[b-scf27s7142] {
+  display: flex;
+}
+
+.scrollable[b-scf27s7142] {
+  overflow-y: auto;
+}
+/* /Components/Layout/MainLayout.razor.rz.scp.css */
+#blazor-error-ui[b-nam7kxo9ya] {
+    color-scheme: light only;
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss[b-nam7kxo9ya] {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+/* /Components/Layout/ReconnectModal.razor.rz.scp.css */
+.components-reconnect-first-attempt-visible[b-rx8p474nu6],
+.components-reconnect-repeated-attempt-visible[b-rx8p474nu6],
+.components-reconnect-failed-visible[b-rx8p474nu6],
+.components-pause-visible[b-rx8p474nu6],
+.components-resume-failed-visible[b-rx8p474nu6],
+.components-rejoining-animation[b-rx8p474nu6] {
+    display: none;
+}
+
+#components-reconnect-modal.components-reconnect-show .components-reconnect-first-attempt-visible[b-rx8p474nu6],
+#components-reconnect-modal.components-reconnect-show .components-rejoining-animation[b-rx8p474nu6],
+#components-reconnect-modal.components-reconnect-paused .components-pause-visible[b-rx8p474nu6],
+#components-reconnect-modal.components-reconnect-resume-failed .components-resume-failed-visible[b-rx8p474nu6],
+#components-reconnect-modal.components-reconnect-retrying[b-rx8p474nu6],
+#components-reconnect-modal.components-reconnect-retrying .components-reconnect-repeated-attempt-visible[b-rx8p474nu6],
+#components-reconnect-modal.components-reconnect-retrying .components-rejoining-animation[b-rx8p474nu6],
+#components-reconnect-modal.components-reconnect-failed[b-rx8p474nu6],
+#components-reconnect-modal.components-reconnect-failed .components-reconnect-failed-visible[b-rx8p474nu6] {
+    display: block;
+}
+
+
+#components-reconnect-modal[b-rx8p474nu6] {
+    background-color: white;
+    width: 20rem;
+    margin: 20vh auto;
+    padding: 2rem;
+    border: 0;
+    border-radius: 0.5rem;
+    box-shadow: 0 3px 6px 2px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: display 0.5s allow-discrete, overlay 0.5s allow-discrete;
+    animation: components-reconnect-modal-fadeOutOpacity-b-rx8p474nu6 0.5s both;
+    &[open]
+
+{
+    animation: components-reconnect-modal-slideUp-b-rx8p474nu6 1.5s cubic-bezier(.05, .89, .25, 1.02) 0.3s, components-reconnect-modal-fadeInOpacity-b-rx8p474nu6 0.5s ease-in-out 0.3s;
+    animation-fill-mode: both;
+}
+
+}
+
+#components-reconnect-modal[b-rx8p474nu6]::backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+    animation: components-reconnect-modal-fadeInOpacity-b-rx8p474nu6 0.5s ease-in-out;
+    opacity: 1;
+}
+
+@keyframes components-reconnect-modal-slideUp-b-rx8p474nu6 {
+    0% {
+        transform: translateY(30px) scale(0.95);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes components-reconnect-modal-fadeInOpacity-b-rx8p474nu6 {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes components-reconnect-modal-fadeOutOpacity-b-rx8p474nu6 {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.components-reconnect-container[b-rx8p474nu6] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+#components-reconnect-modal p[b-rx8p474nu6] {
+    margin: 0;
+    text-align: center;
+}
+
+#components-reconnect-modal button[b-rx8p474nu6] {
+    border: 0;
+    background-color: #6b9ed2;
+    color: white;
+    padding: 4px 24px;
+    border-radius: 4px;
+}
+
+    #components-reconnect-modal button:hover[b-rx8p474nu6] {
+        background-color: #3b6ea2;
+    }
+
+    #components-reconnect-modal button:active[b-rx8p474nu6] {
+        background-color: #6b9ed2;
+    }
+
+.components-rejoining-animation[b-rx8p474nu6] {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+    .components-rejoining-animation div[b-rx8p474nu6] {
+        position: absolute;
+        border: 3px solid #0087ff;
+        opacity: 1;
+        border-radius: 50%;
+        animation: components-rejoining-animation-b-rx8p474nu6 1.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+
+        .components-rejoining-animation div:nth-child(2)[b-rx8p474nu6] {
+            animation-delay: -0.5s;
+        }
+
+@keyframes components-rejoining-animation-b-rx8p474nu6 {
+    0% {
+        top: 40px;
+        left: 40px;
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+
+    4.9% {
+        top: 40px;
+        left: 40px;
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+
+    5% {
+        top: 40px;
+        left: 40px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+
+    100% {
+        top: 0px;
+        left: 0px;
+        width: 80px;
+        height: 80px;
+        opacity: 0;
+    }
+}
