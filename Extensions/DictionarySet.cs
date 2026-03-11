@@ -34,3 +34,15 @@ public static class DictionarySet
     where TKey : notnull
     => dict.AddItems(key, value);
 }
+
+public class ReadOnlySet<T>(Func<IEnumerable<T>> getItems) : IEnumerable<T>
+{
+  private readonly Func<IEnumerable<T>> _getItems = getItems;
+
+  IEnumerator<T> IEnumerable<T>.GetEnumerator()
+  {
+    foreach (T item in _getItems())
+      yield return item;
+  }
+  IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<T>)this).GetEnumerator();
+}

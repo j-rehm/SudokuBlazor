@@ -8,7 +8,7 @@
   }
   else if (Cell.HasValue)
   {
-    <span class="@ContentClass.Add("cell-value").AddIf(Cell.IsDuplicate, "problem duplicate")">
+    <span class="@ContentClass.Add("cell-value").AddIf(Cell.IsGiven, "given").AddIf(Cell.IsDuplicate, "problem duplicate")">
       @Cell.Value
     </span>
   }

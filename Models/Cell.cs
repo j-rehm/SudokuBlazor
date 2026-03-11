@@ -3,18 +3,60 @@ using System.Collections;
 
 namespace SudokuBlazor.Models;
 
-public class Cell(int2 coords)
+public class Cell(int2 coords, int value = 0)
 {
+  //public Cell(int2 coords, int index)
+  //{
+  //  Coords = coords;
+  //  _cell = 0;
+  //  _cell |= index << 17;
+  //  _cell |= 0 << 13;
+  //  _cell |= 0b100100101 << 4;
+
+  //  Console.WriteLine($"9: {GetFlag(9, 4)}");
+  //  Console.WriteLine($"8: {GetFlag(8, 4)}");
+  //  Console.WriteLine($"7: {GetFlag(7, 4)}");
+  //  Console.WriteLine($"6: {GetFlag(6, 4)}");
+  //  Console.WriteLine($"5: {GetFlag(5, 4)}");
+  //  Console.WriteLine($"4: {GetFlag(4, 4)}");
+  //  Console.WriteLine($"3: {GetFlag(3, 4)}");
+  //  Console.WriteLine($"2: {GetFlag(2, 4)}");
+  //  Console.WriteLine($"1: {GetFlag(1, 4)}");
+  //}
+
+  //private int _cell;
+
+  //private bool GetFlag(int bit, int offset)
+  //{
+  //  int mask = 1 << bit + offset - 1;
+  //  return (_cell >> offset & mask) == mask;
+  //}
+
+  //private void EnableFlag(int bit, int offset)
+  //{
+  //  int mask = 1 << bit + offset - 1;
+  //  _cell |= mask;
+  //}
+
+
+
   public int2 Coords { get; } = coords;
 
-  private int? _value = null;
+  public bool IsGiven { get; } = value > 0;
+
   public int Value
   {
-    get => _value!.Value;
-    set => _value = value;
-  }
-  public bool HasValue => _value.HasValue;
-  public void RemoveValue() => _value = null;
+    get => field;
+    set
+    {
+      if (IsGiven)
+        return;
+      field = value;
+    }
+  } = value;
+
+  public bool HasValue => Value > 0;
+  public void RemoveValue() => Value = 0;
 
   public List<CellGroup> Groups { get; } = [];
   public void JoinGroup(CellGroup group)
@@ -31,6 +73,24 @@ public class Cell(int2 coords)
   public bool HasOptions => HasValue == false && Options.Count > 0;
   public bool HasSingleOption => HasValue == false && Options.Count == 1;
   public bool CouldBe(int value) => Options.Contains(value);
+
+  public int CorrectOption { get; set; } = 0;
+
+  public bool GetCorrectOption(out int option)
+  {
+    if (CorrectOption > 0)
+    {
+      option = CorrectOption;
+      return true;
+    }
+    if (HasSingleOption)
+    {
+      option = Options.Single();
+      return true;
+    }
+    option = 0;
+    return false;
+  }
 
   public HashSet<CellInvalidContext> Problems { get; } = [];
   public bool HasProblem<T>(out List<T> problems)

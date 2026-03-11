@@ -1,61 +1,63 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using SudokuBlazor.Extensions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SudokuBlazor.Models;
 
 public class Sudoku : IDisposable
 {
-  public int BlockWidth { get; }
-  public int Width { get; }
-  public int CellCount { get; }
+  public const int BlockWidth = 3;
+  public const int BoardWidth = 9;
+  public const int CellCount = 81;
 
   private readonly List<Cell> _cells;
+  public ReadOnlySet<Cell> Cells { get; }
+  
   private readonly List<CellGroup> _groups;
+  public ReadOnlySet<CellGroup> Groups { get; }
+
+  private readonly HashSet<CellInvalidContext> _problems;
+  public ReadOnlySet<CellInvalidContext> Problems { get; }
 
   private readonly IReadOnlyList<int> _fullOptions;
 
-  public Sudoku(int width = 9)
+  public Sudoku() : this([]) { }
+  public Sudoku(int[] cells)
   {
-    double widthSquareRoot = Math.Sqrt(width);
-    int blockWidth = (int)Math.Floor(widthSquareRoot);
-    if (widthSquareRoot > blockWidth) // Sqrt has a remainder. No good.
-      throw new Exception("Sudoku width must be a perfect square.");
-
-    BlockWidth = blockWidth;
-    Width = width;
-    CellCount = width * width;
-
-    int[] fullOptions = new int[Width];
+    int[] fullOptions = new int[BoardWidth];
     for (int i = 0; i < fullOptions.Length; i++)
       fullOptions[i] = i + 1;
     _fullOptions = [.. fullOptions];
 
     _cells = new List<Cell>(CellCount);
+    Cells = new(() => _cells);
     for (int index = 0; index < CellCount; index++)
     {
+      int value = cells.Length > index ? cells[index] : 0;
       int2 coords = CoordsOf(index);
-      _cells.Add(new(coords));
+      _cells.Add(new(coords, value));
     }
 
     _groups = [];
-    for (int r = 0; r < Width; r++)
+    Groups = new(() => _groups);
+    for (int r = 0; r < BoardWidth; r++)
     {
       CellGroup group = [];
-      for (int c = 0; c < Width; c++)
+      for (int c = 0; c < BoardWidth; c++)
         if (TryGetCell((r, c), out Cell? cell))
           group.Add(cell);
       _groups.Add(group);
     }
-    for (int c = 0; c < Width; c++)
+    for (int c = 0; c < BoardWidth; c++)
     {
       CellGroup group = [];
-      for (int r = 0; r < Width; r++)
+      for (int r = 0; r < BoardWidth; r++)
         if (TryGetCell((r, c), out Cell? cell))
           group.Add(cell);
       _groups.Add(group);
     }
-    for (int ro = 0; ro < Width; ro += BlockWidth)
+    for (int ro = 0; ro < BoardWidth; ro += BlockWidth)
     {
-      for (int co = 0; co < Width; co += BlockWidth)
+      for (int co = 0; co < BoardWidth; co += BlockWidth)
       {
         CellGroup group = [];
         for (int r = 0; r < BlockWidth; r++)
@@ -68,6 +70,9 @@ public class Sudoku : IDisposable
         _groups.Add(group);
       }
     }
+
+    _problems = [];
+    Problems = new(() => _problems);
   }
 
   public void Dispose()
@@ -85,14 +90,14 @@ public class Sudoku : IDisposable
     => IsWithin(values.X, bound) && IsWithin(values.Y, bound);
 
   public int IndexOf(int2 coords)
-    => coords.Row * Width + coords.Col;
+    => coords.Row * BoardWidth + coords.Col;
   public bool IsIndexValid(int index)
     => IsWithin(index, CellCount);
 
   public int2 CoordsOf(int index)
-    => (index / Width, index % Width);
+    => (index / BoardWidth, index % BoardWidth);
   public bool AreCoordsValid(int2 coords)
-    => IsWithin(coords, Width);
+    => IsWithin(coords, BoardWidth);
 
   public bool GetIndex(int2 coords, out int index)
   {
@@ -147,29 +152,16 @@ public class Sudoku : IDisposable
   {
     ResetCellProblems();
     foreach (CellGroup group in _groups)
+    {
       group.UpdateCellProblems();
+      _problems.UnionWith(group.Problems);
+    }
   }
   public void ResetCellProblems()
   {
+    _problems.Clear();
     foreach (Cell cell in _cells)
       cell.Problems.Clear();
-  }
-
-  public void SetRandomValues(double threshold = 0.2)
-  {
-    Random rng = new();
-    foreach (Cell cell in _cells)
-    {
-      double chance = rng.NextDouble();
-      if (chance > threshold)
-      {
-        cell.RemoveValue();
-        continue;
-      }
-
-      int value = rng.Next(Width) + 1;
-      cell.Value = value;
-    }
   }
 
   public void Clear()

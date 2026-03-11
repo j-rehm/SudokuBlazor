@@ -6,8 +6,12 @@
   <div class="control-bar">
     <button @onclick="CalculateState">Refresh</button>
     <button @onclick="CleanState">Clean</button>
-    <button @onclick="() => Sudoku.SetRandomValues()">Random</button>
+    <button @onclick="Random">Random</button>
+    <button @onclick="() => Load(_empty)">Empty</button>
+    <button @onclick="() => Load(_steppy)">Steppy</button>
     <button @onclick="Sudoku.Clear">Clear</button>
+    <button @onclick="() => Step()">Step</button>
+    <button @onclick="() => SolveStepwise()">Solve (Stepwise)</button>
 
     @if (Session.Settings.WrapMovement)
     {
@@ -43,10 +47,10 @@
     <CascadingValue Value="@Sudoku">
       <CascadingValue Value="@SelectedCell">
         <div class="grid sudoku">
-          @for (int blockRow = 0; blockRow < Sudoku.Width; blockRow += Sudoku.BlockWidth)
+          @for (int blockRow = 0; blockRow < Sudoku.BoardWidth; blockRow += Sudoku.BlockWidth)
           {
             <div class="row">
-              @for (int blockCol = 0; blockCol < Sudoku.Width; blockCol += Sudoku.BlockWidth)
+              @for (int blockCol = 0; blockCol < Sudoku.BoardWidth; blockCol += Sudoku.BlockWidth)
               {
                 int2 blockCoords = (blockRow, blockCol);
                 int blockIndex = Sudoku.IndexOf(blockCoords);
@@ -73,7 +77,7 @@
     </CascadingValue>
 
     <div class="number-buttons">
-      @for (int i = 0; i < Sudoku.Width; i++)
+      @for (int i = 0; i < Sudoku.BoardWidth; i++)
       {
         int value = i + 1;
         <button class="number-btn" @onclick="@(() => ValueClicked(value))">

@@ -1,14 +1,52 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using SudokuBlazor.Enums;
 using SudokuBlazor.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SudokuBlazor.Components.Pages;
 
 public partial class SudokuPage
 {
-  private Sudoku Sudoku { get; } = new();
+  private readonly int[] _empty = [];
+  private readonly int[] _steppy =
+  [
+    0,2,0, 0,0,5, 0,9,8,
+    0,8,0, 0,0,0, 0,0,7,
+    6,7,0, 0,1,8, 0,0,3,
+
+    8,0,0, 3,9,0, 0,5,0,
+    0,6,0, 0,0,1, 7,0,0,
+    3,1,0, 0,4,6, 0,8,0,
+
+    0,5,0, 4,7,0, 3,6,1,
+    0,0,1, 0,6,0, 0,7,5,
+    0,0,6, 1,0,0, 0,0,2,
+  ];
+
+  private Sudoku Sudoku { get; set; }
 
   public Cell? SelectedCell { get; set; }
+
+  public SudokuPage()
+  {
+    Load(_steppy);
+  }
+
+  [MemberNotNull(nameof(Sudoku))]
+  private void Load(int[] cells)
+    => Sudoku = new(cells);
+
+  private void Random()
+  {
+    int[] cells = new int[Sudoku.CellCount];
+    for (int i = 0; i < cells.Length; i++)
+    {
+      Random rng = new();
+      double chance = rng.NextDouble();
+      cells[i] = chance > 0.25 ? 0 : rng.Next(Sudoku.BoardWidth) + 1;
+    }
+    Load(cells);
+  }
 
   private void SelectCell(Cell? cell)
     => SelectedCell = cell;
@@ -62,7 +100,7 @@ public partial class SudokuPage
     direction = GetWrapDirection(direction);
     offset = GetOffset(direction);
     coords += offset;
-    coords = (Extensions.Math.Mod(coords.Row, Sudoku.Width), Extensions.Math.Mod(coords.Col, Sudoku.Width));
+    coords = (Extensions.Math.Mod(coords.Row, Sudoku.BoardWidth), Extensions.Math.Mod(coords.Col, Sudoku.BoardWidth));
     SelectedCell = Sudoku.GetCellAt(coords);
   }
 
@@ -108,6 +146,19 @@ public partial class SudokuPage
 
   private void ValueClicked(int? value)
     => SetCellValue(value);
+
+  private void Step()
+  {
+    Solver solver = new(Sudoku);
+    solver.Step();
+    CalculateState();
+  }
+
+  private void SolveStepwise()
+  {
+    Solver solver = new(Sudoku);
+    solver.SolveStepwise();
+  }
 
   private void OnKeyDown(KeyboardEventArgs e)
   {
